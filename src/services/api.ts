@@ -1,26 +1,15 @@
 import axios from 'axios';
 
-const isWeb = typeof window !== 'undefined';
+const backendURL = 'http://10.5.0.6:3001';
 
-// Altere para o IP local da sua máquina na rede, ou localhost se rodar só no web
-const localProxyBaseURL = 'http://localhost:3001';
-
-export const getWeather = async (city: string) => {
-  const baseUrl = isWeb
-    ? localProxyBaseURL // usa proxy local para evitar CORS no navegador
-    : 'https://api.hgbrasil.com'; // direto para mobile e desktop
-
-  const response = await axios.get(`${baseUrl}/weather`, {
-    // No proxy local não precisa desses headers extras
-    headers: isWeb ? undefined : undefined,
-    params: isWeb
-      ? { city } // proxy local espera "city" no query
-      : {
-          key: 'ba94c742',
-          city_name: city,
-        },
-  });
-
-  // Se estiver no proxy local, os dados estão no response.data.results (igual API)
-  return response.data.results;
-};
+export async function getWeather(city: string) {
+  try {
+    const response = await axios.get(`${backendURL}/weather`, {
+      params: { city },
+    });
+    return response.data; // Esse é o JSON completo que seu backend envia
+  } catch (error) {
+    console.error('Erro ao buscar o clima:', error);
+    throw error;
+  }
+}
