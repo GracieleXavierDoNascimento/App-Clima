@@ -1,4 +1,3 @@
-// backend.js
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
@@ -35,7 +34,7 @@ app.get('/weather', async (req, res) => {
 
     const response = await axios.get('https://api.hgbrasil.com/weather', {
       params: {
-        key: 'ba94c742',
+        key: '569ccd4b',
         city_name: city,
       },
     });
@@ -44,6 +43,27 @@ app.get('/weather', async (req, res) => {
   } catch (error) {
     console.error('Erro ao buscar clima:', error.message);
     res.status(500).json({ error: 'Erro ao buscar clima' });
+  }
+});
+
+// Rota proxy para ícones do HG Brasil
+app.get('/weather-icons/:icon', async (req, res) => {
+  const iconName = req.params.icon; // Exemplo: clear_day.png
+  const key = '569ccd4b'; // Seu token API
+
+  const url = `https://assets.hgbrasil.com/weather/icons/conditions/${iconName}`;
+
+  try {
+    const response = await axios.get(url, {
+      responseType: 'arraybuffer',
+      params: { key },
+    });
+
+    res.setHeader('Content-Type', 'image/png');
+    res.send(response.data);
+  } catch (error) {
+    console.error('Erro ao buscar ícone:', error.message);
+    res.status(500).send('Erro ao buscar ícone');
   }
 });
 
