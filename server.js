@@ -67,7 +67,6 @@ app.get('/weather-icons/:icon', async (req, res) => {
   }
 });
 
-// Inicia o servidor escutando em 0.0.0.0 para aceitar conexões da rede
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Servidor rodando em http://${getLocalIp()}:${PORT}`);
 });
