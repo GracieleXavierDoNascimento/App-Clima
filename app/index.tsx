@@ -1,23 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Image } from 'react-native';
-import axios from 'axios';
-import { Ionicons } from '@expo/vector-icons';
+import { View, Text, StyleSheet, ActivityIndicator, Alert, Image } from 'react-native';
+import { getWeather } from '../src/services/api';
 
 export default function Home() {
   const [weather, setWeather] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchWeather() {
-      const response = await axios.get('https://api.hgbrasil.com/weather', {
-        params: {
-          key: 'ba94c742',
-          city_name: 'Recife,PE',
-        },
-      });
-      setWeather(response.data.results);
-      setLoading(false);
-    }
+    const fetchWeather = async () => {
+      try {
+        const data = await getWeather('Recife,PE');
+        console.log('🔥 Clima recebido:', data);
+        setWeather(data.results);
+      } catch (error) {
+        Alert.alert('Erro', 'Não foi possível obter os dados climáticos.');
+      } finally {
+        setLoading(false);
+      }
+    };
 
     fetchWeather();
   }, []);
@@ -30,23 +30,26 @@ export default function Home() {
     );
   }
 
-  return (
-    <View style={[styles.container, { backgroundColor: '#57B0F3' }]}>
-      <View style={styles.topSection}>
-        <Ionicons name="location-outline" size={24} color="white" />
-        <Text style={styles.city}>{weather.city_name}</Text>
+  if (!weather) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.text}>Dados climáticos indisponíveis.</Text>
       </View>
+    );
+  }
 
-      <Image
-        source={{ uri: 'https://cdn-icons-png.flaticon.com/512/869/869869.png' }}
-        style={styles.icon}
-      />
-
-      <Text style={styles.temp}>{weather.temp}ºC</Text>
-      <Text style={styles.condition}>{weather.description}</Text>
-      <Text style={styles.date}>{weather.date}</Text>
-
-      {/* Aqui podemos adicionar o ForecastList com os cards */}
+  return (
+    <View style={styles.container}>
+      <View style={styles.card}>
+        <Text style={styles.city}>{weather.city}</Text>
+        <Image
+          source={{ uri: weather.img_id ? `https://assets.hgbrasil.com/weather/icons/conditions/${weather.img_id}.svg` : 'https://img.icons8.com/ios-filled/100/ffffff/cloud.png' }}
+          style={styles.icon}
+        />
+        <Text style={styles.temp}>{weather.temp}°</Text>
+        <Text style={styles.description}>{weather.description}</Text>
+        <Text style={styles.date}>{weather.date} • {weather.time}</Text>
+      </View>
     </View>
   );
 }
@@ -54,38 +57,52 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 80,
+    backgroundColor: '#87CEEB', // azul claro moderno
     alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
   },
-  topSection: {
-    flexDirection: 'row',
+  card: {
+    backgroundColor: '#ffffff',
+    borderRadius: 30,
+    paddingVertical: 40,
+    paddingHorizontal: 30,
     alignItems: 'center',
-    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 10,
+    elevation: 6,
+    width: '100%',
   },
   city: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: 'white',
-    marginLeft: 5,
-  },
-  temp: {
-    fontSize: 64,
-    fontWeight: 'bold',
-    color: 'white',
-  },
-  condition: {
-    fontSize: 22,
-    color: 'white',
-    marginTop: 5,
-  },
-  date: {
-    color: '#eee',
-    fontSize: 16,
-    marginTop: 8,
+    fontSize: 26,
+    color: '#333',
+    fontWeight: '600',
+    marginBottom: 10,
   },
   icon: {
     width: 100,
     height: 100,
     marginVertical: 10,
+  },
+  temp: {
+    fontSize: 64,
+    fontWeight: 'bold',
+    color: '#1E90FF',
+  },
+  description: {
+    fontSize: 22,
+    color: '#666',
+    marginTop: 8,
+  },
+  date: {
+    fontSize: 16,
+    color: '#999',
+    marginTop: 12,
+  },
+  text: {
+    fontSize: 18,
+    color: '#FFF',
   },
 });
