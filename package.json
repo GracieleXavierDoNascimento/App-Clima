@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "name": "weather-app",
   "main": "expo-router/entry",
   "version": "1.0.0",
@@ -53,17 +52,4 @@
     "typescript": "~5.8.3"
   },
   "private": true
-=======
-  "name": "app-clima-backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
->>>>>>> 94c16b9cbc99baa18a5bea65ad73ebd93f104560
 }

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const backendURL = 'http://10.5.0.6:3001';
+const backendURL = 'http://192.168.56.1:3001';
 
 export async function getWeather(city: string) {
   try {
